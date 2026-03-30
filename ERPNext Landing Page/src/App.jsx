@@ -1,4 +1,5 @@
 import './index.css';
+import { Toaster } from 'react-hot-toast';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import ProblemSection from './components/ProblemSection';
@@ -33,6 +34,25 @@ function App() {
         <CTASection />
       </main>
       <Footer />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#0f0f1f',
+            color: '#e2e8f0',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '10px',
+            fontSize: '14px',
+          },
+          success: {
+            iconTheme: { primary: '#22c55e', secondary: '#0f0f1f' },
+          },
+          error: {
+            iconTheme: { primary: '#ef4444', secondary: '#0f0f1f' },
+          },
+        }}
+      />
     </div>
   );
 }

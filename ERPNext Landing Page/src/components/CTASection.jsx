@@ -1,12 +1,14 @@
+/* global $ */
 import { motion } from "framer-motion";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { useState } from "react";
-import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function CTASection() {
   const [formData, setFormData] = useState({
     name: "",
     company: "",
+    mobile: "",
     email: "",
     message: "",
   });
@@ -18,29 +20,25 @@ export default function CTASection() {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    try {
-      const API_URL = import.meta.env.VITE_N8N_WEBHOOK;
+    const API_URL = import.meta.env.VITE_N8N_WEBHOOK;
 
-      console.log(API_URL, formData)
-
-      const res = await axios.post(API_URL, formData);
-
-      if (res.status === 200) {
-        alert("✅ Message sent successfully!");
-        setFormData({
-          name: "",
-          company: "",
-          email: "",
-          message: "",
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      alert("❌ Error sending message");
-    }
+    $.ajax({
+      url: API_URL,
+      method: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(formData),
+      success: () => {
+        toast.success("Message sent! We'll be in touch within 24 hours.");
+        setFormData({ name: "", company: "", email: "", message: "" });
+      },
+      error: (_xhr, status, err) => {
+        console.error(status, err);
+        toast.error("Failed to send message. Please try again.");
+      },
+    });
   };
 
   return (
@@ -137,20 +135,34 @@ export default function CTASection() {
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block text-slate-400 text-xs font-medium mb-1.5">
-                  Work Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  placeholder="john@company.com"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
-                />
+                <div>
+                  <label className="block text-slate-400 text-xs font-medium mb-1.5">
+                    Mobile
+                  </label>
+                  <input
+                    type="tel"
+                    name="mobile"
+                    value={formData.mobile}
+                    onChange={handleChange}
+                    required
+                    placeholder="+91 1234567890"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 text-xs font-medium mb-1.5">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    placeholder="john@gmail.com"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-slate-400 text-xs font-medium mb-1.5">
