@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Linkedin, Twitter, Github } from 'lucide-react';
+import Logo from '../assets/logo_white.png';
 
 const footerLinks = {
   Services: [
@@ -35,10 +36,7 @@ export default function Footer() {
           {/* Brand column */}
           <div className="col-span-2 lg:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
-              </div>
-              <span className="font-bold text-lg text-white">Binalyto</span>
+              <img className='h-5 w-30' src={Logo} alt="Binalyto Logo" />
             </div>
             <p className="text-slate-500 text-sm leading-relaxed mb-6 max-w-xs">
               AI + ERP business transformation. We help growing businesses unify
@@ -49,11 +47,11 @@ export default function Footer() {
             <div className="space-y-2.5">
               <a href="mailto:hello@binalyto.com" className="flex items-center gap-2.5 text-slate-500 hover:text-slate-300 text-sm transition-colors">
                 <Mail size={14} className="text-blue-400" />
-                hello@binalyto.com
+                mail@binalyto.com
               </a>
-              <a href="tel:+1234567890" className="flex items-center gap-2.5 text-slate-500 hover:text-slate-300 text-sm transition-colors">
+              <a href="tel:+919744949078" className="flex items-center gap-2.5 text-slate-500 hover:text-slate-300 text-sm transition-colors">
                 <Phone size={14} className="text-blue-400" />
-                +1 (234) 567-890
+                +91 9744949078
               </a>
               <div className="flex items-center gap-2.5 text-slate-500 text-sm">
                 <MapPin size={14} className="text-blue-400" />
@@ -62,7 +60,7 @@ export default function Footer() {
             </div>
 
             {/* Socials */}
-            <div className="flex items-center gap-3 mt-6">
+            {/* <div className="flex items-center gap-3 mt-6">
               {[
                 { icon: <Linkedin size={16} />, href: '#' },
                 { icon: <Twitter size={16} />, href: '#' },
@@ -76,7 +74,7 @@ export default function Footer() {
                   {s.icon}
                 </a>
               ))}
-            </div>
+            </div> */}
           </div>
 
           {/* Links columns */}

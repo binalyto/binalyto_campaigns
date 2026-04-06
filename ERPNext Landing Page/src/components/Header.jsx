@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import Logo from '../assets/logo_white.png';
 
 const navLinks = [
   { label: 'Solutions', href: '#solutions' },
@@ -34,13 +35,13 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-18">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center glow-blue transition-all duration-300 group-hover:scale-110">
-              <span className="text-white font-bold text-sm">B</span>
-            </div>
-            <span className="font-bold text-lg text-white tracking-tight">
-              Binalyto
-            </span>
+          <a
+  href="https://binalyto.com/"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex items-center gap-2.5 group"
+>
+            <img className='h-5 w-30' src={Logo} alt="Binalyto Logo" />
           </a>
 
           {/* Desktop Nav */}
