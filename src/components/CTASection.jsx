@@ -1,6 +1,6 @@
 /* global $ */
-import { motion } from "framer-motion";
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, Check, Loader2, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -12,6 +12,8 @@ export default function CTASection() {
     email: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -23,11 +25,14 @@ export default function CTASection() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (isSubmitting || isSubmitted) return;
+
     const API_URL =
       import.meta.env.VITE_N8N_WEBHOOK ||
       "https://n8n.binalyto.com/webhook/1f17a41d-ee6a-47d5-840c-60b960343545";
-    console.log(API_URL);
-    
+
+    setIsSubmitting(true);
+
     $.ajax({
       url: API_URL,
       method: "POST",
@@ -35,13 +40,22 @@ export default function CTASection() {
       data: JSON.stringify(formData),
       success: () => {
         toast.success("Message sent! We'll be in touch within 24 hours.");
-        setFormData({ name: "", company: "", email: "", message: "" });
+        setFormData({ name: "", company: "", mobile: "", email: "", message: "" });
+        setIsSubmitted(true);
       },
       error: (_xhr, status, err) => {
         console.error(status, err);
         toast.error("Failed to send message. Please try again.");
       },
+      complete: () => {
+        setIsSubmitting(false);
+      },
     });
+  };
+
+  const handleBackToHome = () => {
+    setIsSubmitted(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -97,7 +111,7 @@ export default function CTASection() {
             </a>
           </div>
 
-          {/* Contact form */}
+          {/* Contact form / Success state */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -105,89 +119,203 @@ export default function CTASection() {
             transition={{ delay: 0.2, duration: 0.7 }}
             className="card-glass rounded-2xl p-8 max-w-2xl mx-auto"
           >
-            <h3 className="text-white font-semibold text-lg mb-6">
-              Or send us a quick message
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-400 text-xs font-medium mb-1.5">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    placeholder="John Smith"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-400 text-xs font-medium mb-1.5">
-                    Company
-                  </label>
-                  <input
-                    type="text"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    required
-                    placeholder="Acme Corp"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-400 text-xs font-medium mb-1.5">
-                    Mobile
-                  </label>
-                  <input
-                    type="tel"
-                    name="mobile"
-                    value={formData.mobile}
-                    onChange={handleChange}
-                    required
-                    placeholder="+91 1234567890"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-400 text-xs font-medium mb-1.5">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    placeholder="john@gmail.com"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-slate-400 text-xs font-medium mb-1.5">
-                  Tell us about your needs
-                </label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={3}
-                  placeholder="We're looking to replace our current system / add AI to ERPNext..."
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200 resize-none"
-                />
-              </div>
-              <button
-                type="submit"
-                className="btn-primary w-full py-3 text-sm font-semibold relative z-10 flex items-center justify-center gap-2"
-              >
-                <span className="relative z-10">Send Message</span>
-                <ArrowRight size={15} className="relative z-10" />
-              </button>
-            </form>
+            <AnimatePresence mode="wait">
+              {isSubmitted ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4 }}
+                  className="flex flex-col items-center text-center py-8"
+                >
+                  <motion.div
+                    initial={{ scale: 0, rotate: -90 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 15,
+                      delay: 0.1,
+                    }}
+                    className="relative mb-6"
+                  >
+                    <div className="absolute inset-0 rounded-full bg-green-500/20 blur-2xl" />
+                    <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/30">
+                      <motion.div
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ pathLength: 1, opacity: 1 }}
+                        transition={{ delay: 0.4, duration: 0.5 }}
+                      >
+                        <Check
+                          size={40}
+                          strokeWidth={3}
+                          className="text-white"
+                        />
+                      </motion.div>
+                    </div>
+                    <motion.span
+                      initial={{ scale: 0, opacity: 0.6 }}
+                      animate={{ scale: 1.8, opacity: 0 }}
+                      transition={{ delay: 0.3, duration: 1, ease: "easeOut" }}
+                      className="absolute inset-0 rounded-full border-2 border-green-400"
+                    />
+                  </motion.div>
+
+                  <motion.h3
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5, duration: 0.4 }}
+                    className="text-2xl sm:text-3xl font-bold text-white mb-3"
+                  >
+                    Thank you for connecting with{" "}
+                    <span className="gradient-text">Binalyto.</span>
+                  </motion.h3>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6, duration: 0.4 }}
+                    className="text-slate-400 text-base leading-relaxed mb-8 max-w-md"
+                  >
+                    Our ERP + AI experts will contact you shortly.
+                  </motion.p>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.4 }}
+                    className="flex flex-wrap gap-3 justify-center"
+                  >
+                    <a
+                      href="#services"
+                      className="btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold relative z-10"
+                    >
+                      <span className="relative z-10">Explore Services</span>
+                      <ArrowRight size={15} className="relative z-10" />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleBackToHome}
+                      className="btn-secondary inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold"
+                    >
+                      Back to Home
+                    </button>
+                  </motion.div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="form"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <h3 className="text-white font-semibold text-lg mb-6">
+                    Or send us a quick message
+                  </h3>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <fieldset
+                      disabled={isSubmitting}
+                      className="space-y-4 disabled:opacity-75"
+                    >
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-slate-400 text-xs font-medium mb-1.5">
+                            Full Name
+                          </label>
+                          <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                            placeholder="John Smith"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-400 text-xs font-medium mb-1.5">
+                            Company
+                          </label>
+                          <input
+                            type="text"
+                            name="company"
+                            value={formData.company}
+                            onChange={handleChange}
+                            required
+                            placeholder="Acme Corp"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-400 text-xs font-medium mb-1.5">
+                            Mobile
+                          </label>
+                          <input
+                            type="tel"
+                            name="mobile"
+                            value={formData.mobile}
+                            onChange={handleChange}
+                            required
+                            placeholder="+91 1234567890"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-400 text-xs font-medium mb-1.5">
+                            Email
+                          </label>
+                          <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                            placeholder="john@gmail.com"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-slate-400 text-xs font-medium mb-1.5">
+                          Tell us about your needs
+                        </label>
+                        <textarea
+                          name="message"
+                          value={formData.message}
+                          onChange={handleChange}
+                          rows={3}
+                          placeholder="We're looking to replace our current system / add AI to ERPNext..."
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all duration-200 resize-none"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        aria-busy={isSubmitting}
+                        className="btn-primary w-full py-3 text-sm font-semibold relative z-10 flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-80"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2
+                              size={15}
+                              className="relative z-10 animate-spin"
+                            />
+                            <span className="relative z-10">Sending...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="relative z-10">Send Message</span>
+                            <ArrowRight size={15} className="relative z-10" />
+                          </>
+                        )}
+                      </button>
+                    </fieldset>
+                  </form>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           {/* Trust indicators */}
